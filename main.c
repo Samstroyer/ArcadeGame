@@ -2,9 +2,9 @@
 
 typedef struct
 {
-    int x;
-    int y;
-    int damage;
+    float x;
+    float y;
+    float damage;
     float speed;
 } Player;
 
@@ -26,17 +26,37 @@ void LoadImages()
     UnloadImage(enemy_image);
 }
 
+void Movement(Player *p)
+{
+    float speed = p->speed;
+
+    if (IsKeyDown(KEY_W))
+        p->y -= speed;
+    if (IsKeyDown(KEY_S))
+        p->y += speed;
+    if (IsKeyDown(KEY_A))
+        p->x -= speed;
+    if (IsKeyDown(KEY_D))
+        p->x += speed;
+}
+
 int main()
 {
-    SetTargetFPS(10);
+    SetTargetFPS(60);
     InitWindow(800, 800, "Galaga 2.0");
     LoadImages();
     Player p;
+    p.x = (GetScreenWidth() / 2) - (player_texture.width / 2);
+    p.y = GetScreenHeight() - 40;
+    p.damage = 1;
+    p.speed = 1.5f;
 
     while (!WindowShouldClose())
     {
+        Movement(&p);
         BeginDrawing();
-        DrawTexture(player_texture, 25, 25, WHITE);
+        ClearBackground(BLACK);
+        DrawTexture(player_texture, p.x, p.y, WHITE);
         EndDrawing();
     }
 
