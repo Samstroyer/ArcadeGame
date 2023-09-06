@@ -1,11 +1,12 @@
 #include "raylib.h"
 #include "structs.c"
+#include <stdio.h>
 
 Texture2D player_texture;
 Texture2D enemy_texture;
 
-int cooldown_max = 50;
-int fire_cooldown = 50;
+const int cooldown_max = 50;
+int fire_cooldown = cooldown_max;
 
 void LoadImages()
 {
@@ -25,12 +26,33 @@ void LoadImages()
     UnloadImage(enemy_image);
 }
 
+void Fire(Player *p)
+{
+    for (int i = 0; i < 200; i++)
+    {
+        if (!p->projectiles[i].exist)
+        {
+            p->projectiles[i].exist = true;
+            p->projectiles[i].x = p->x;
+            p->projectiles[i].y = p->y;
+            p->projectiles[i].damage = p->damage;
+            break;
+        }
+    }
+}
+
 void Keybinds(Player *p)
 {
     float speed = p->speed;
 
-    if (fire_cooldown < 0 && IsKeyDown(KEY_SPACE))
+    if (fire_cooldown <= 0 && IsKeyDown(KEY_SPACE))
     {
+        fire_cooldown = cooldown_max;
+        Fire(p);
+    }
+    else if (fire_cooldown > 0)
+    {
+        fire_cooldown--;
     }
 
     if (IsKeyDown(KEY_W))
@@ -52,18 +74,31 @@ void RenderEnemies(Enemy *enemies)
 {
     for (int i = 0; i < 200; i++)
     {
-        if (enemies[i].alive)
+        if (enemies[i].exist)
         {
             DrawTexture(enemy_texture, enemies[i].x, enemies[i].y, WHITE);
         }
     }
 }
 
-void SetupEnemy(Enemy *enemies)
+void Setup(Enemy *enemies, Player *p)
 {
     for (int i = 0; i < 200; i++)
     {
-        enemies[i].alive = false;
+        enemies[i].exist = false;
+        p->projectiles[i].exist = false;
+    }
+}
+
+void UpdateProjectiles(Player *p)
+{
+    for (int i = 0; i < 200; i++)
+    {
+        if (p->projectiles[i].exist)
+        {
+            p->projectiles[i].y -= 1;
+            DrawRectangle(p->projectiles[i].x, p->projectiles[i].y, 10, 10, RED);
+        }
     }
 }
 
@@ -74,13 +109,14 @@ int main()
     LoadImages();
 
     Enemy enemies[200];
-    SetupEnemy(enemies);
 
     Player p;
     p.x = (GetScreenWidth() / 2) - (player_texture.width / 2);
     p.y = GetScreenHeight() - 40;
     p.damage = 1;
     p.speed = 1.5f;
+
+    Setup(enemies, &p);
 
     while (!WindowShouldClose())
     {
@@ -89,6 +125,7 @@ int main()
 
         Keybinds(&p);
         RenderPlayer(&p);
+        UpdateProjectiles(&p);
         RenderEnemies(enemies);
 
         EndDrawing();

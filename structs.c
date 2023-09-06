@@ -5,7 +5,16 @@ typedef struct
     float x;
     float y;
     float damage;
+    bool exist;
+} Projectile;
+
+typedef struct
+{
+    float x;
+    float y;
+    float damage;
     float speed;
+    Projectile projectiles[200];
 } Player;
 
 typedef struct
@@ -14,13 +23,5 @@ typedef struct
     float y;
     float speed;
     float damage;
-} Projectile;
-
-typedef struct
-{
-    float x;
-    float y;
-    float speed;
-    float damage;
-    bool alive;
+    bool exist;
 } Enemy;
