@@ -1,24 +1,11 @@
 #include "raylib.h"
-
-typedef struct
-{
-    float x;
-    float y;
-    float damage;
-    float speed;
-} Player;
-
-typedef struct
-{
-    float x;
-    float y;
-    float speed;
-    float damage;
-    bool alive;
-} Enemy;
+#include "structs.c"
 
 Texture2D player_texture;
 Texture2D enemy_texture;
+
+int cooldown_max = 50;
+int fire_cooldown = 50;
 
 void LoadImages()
 {
@@ -38,9 +25,13 @@ void LoadImages()
     UnloadImage(enemy_image);
 }
 
-void Movement(Player *p)
+void Keybinds(Player *p)
 {
     float speed = p->speed;
+
+    if (fire_cooldown < 0 && IsKeyDown(KEY_SPACE))
+    {
+    }
 
     if (IsKeyDown(KEY_W))
         p->y -= speed;
@@ -96,7 +87,7 @@ int main()
         BeginDrawing();
         ClearBackground(BLACK);
 
-        Movement(&p);
+        Keybinds(&p);
         RenderPlayer(&p);
         RenderEnemies(enemies);
 
