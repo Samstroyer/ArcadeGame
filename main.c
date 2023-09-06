@@ -26,6 +26,14 @@ void LoadImages()
     UnloadImage(enemy_image);
 }
 
+typedef struct
+{
+    float x;
+    float y;
+    float speed;
+    float damage;
+} Enemy;
+
 void Movement(Player *p)
 {
     float speed = p->speed;
@@ -38,6 +46,15 @@ void Movement(Player *p)
         p->x -= speed;
     if (IsKeyDown(KEY_D))
         p->x += speed;
+}
+
+void RenderPlayer(Player *p)
+{
+    DrawTexture(player_texture, p->x, p->y, WHITE);
+}
+
+void RenderEnemies()
+{
 }
 
 int main()
@@ -53,10 +70,13 @@ int main()
 
     while (!WindowShouldClose())
     {
-        Movement(&p);
         BeginDrawing();
         ClearBackground(BLACK);
-        DrawTexture(player_texture, p.x, p.y, WHITE);
+
+        Movement(&p);
+        RenderPlayer(&p);
+        RenderEnemies();
+
         EndDrawing();
     }
 
