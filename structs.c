@@ -14,7 +14,7 @@ typedef struct
     float y;
     float damage;
     float speed;
-    Projectile projectiles[200];
+    Projectile projectiles[20];
 } Player;
 
 typedef struct
