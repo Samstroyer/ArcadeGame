@@ -1,5 +1,5 @@
 #include "raylib.h"
-#include "structs.c"
+#include <stdio.h>
 
 Texture2D player_texture;
 

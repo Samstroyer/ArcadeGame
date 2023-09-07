@@ -1,4 +1,3 @@
-#include "structs.c"
 #include <stdio.h>
 
 const int max_enemy_spawn_cooldown = 300;
@@ -11,6 +10,9 @@ void Setup(Enemy *enemies, Player *p)
     for (int i = 0; i < 200; i++)
     {
         enemies[i].exist = false;
+        enemies[i].damage = 1;
+        enemies[i].spawning = false;
+        enemies[i].speed = 2;
     }
     for (int i = 0; i < 20; i++)
     {
@@ -28,6 +30,26 @@ void RenderEnemies(Enemy *enemies)
         }
     }
 }
+void SpawnEnemies(Enemy *enemies, int alive_enemies)
+{
+    while (alive_enemies < enemy_max)
+    {
+        for (int i = 0; i < 200; i++)
+        {
+            if (!enemies[i].exist)
+            {
+                enemies[i].exist = true;
+                enemies[i].spawning = true;
+                enemies[i].x = GetRandomValue(100, 700);
+                // (enemies[i].speed) Remember to maybe change this?
+                goto LoopEnd;
+            }
+        }
+
+    LoopEnd:
+        alive_enemies++;
+    }
+}
 
 void CheckEnemies(Enemy *enemies)
 {
@@ -39,6 +61,8 @@ void CheckEnemies(Enemy *enemies)
             alive_enemies++;
         }
     }
+
+    SpawnEnemies(enemies, alive_enemies);
 
     printf("Amount of alive enemies: %i\n", alive_enemies);
 }
