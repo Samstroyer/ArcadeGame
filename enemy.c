@@ -29,20 +29,6 @@ void RenderEnemies(Enemy *enemies)
     }
 }
 
-void MoveEnemies(Enemy *enemies, Player *p)
-{
-    for (int i = 0; i < 200; i++)
-    {
-        if (enemies[i].exist)
-        {
-            // Casual moving
-        }
-        else if (enemies[i].spawning)
-        {
-        }
-    }
-}
-
 void CheckEnemies(Enemy *enemies)
 {
     int alive_enemies = 0;
