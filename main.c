@@ -1,9 +1,8 @@
 #include "raylib.h"
-#include "structs.c"
+#include "enemy.c"
 #include <stdio.h>
 
 Texture2D player_texture;
-Texture2D enemy_texture;
 
 const int cooldown_max = 50;
 int fire_cooldown = cooldown_max;
@@ -90,26 +89,6 @@ void RenderPlayer(Player *p)
     DrawTexture(player_texture, p->x, p->y, WHITE);
 }
 
-void RenderEnemies(Enemy *enemies)
-{
-    for (int i = 0; i < 200; i++)
-    {
-        if (enemies[i].exist)
-        {
-            DrawTexture(enemy_texture, enemies[i].x, enemies[i].y, WHITE);
-        }
-    }
-}
-
-void Setup(Enemy *enemies, Player *p)
-{
-    for (int i = 0; i < 200; i++)
-    {
-        enemies[i].exist = false;
-        p->projectiles[i].exist = false;
-    }
-}
-
 void UpdateProjectiles(Player *p)
 {
     for (int i = 0; i < 20; i++)
@@ -138,7 +117,7 @@ int main()
     p.x = (GetScreenWidth() / 2) - (player_texture.width / 2);
     p.y = GetScreenHeight() - 40;
     p.damage = 1;
-    p.speed = 1.5f;
+    p.speed = 2.5f;
 
     Setup(enemies, &p);
 
@@ -150,7 +129,10 @@ int main()
         Keybinds(&p);
         RenderPlayer(&p);
         UpdateProjectiles(&p);
+        MoveEnemies(enemies, &p);
         RenderEnemies(enemies);
+
+        CheckEnemies(enemies);
 
         EndDrawing();
     }
