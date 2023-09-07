@@ -1,9 +1,17 @@
 #include <stdio.h>
 
-const int max_enemy_spawn_cooldown = 300;
+const int max_enemy_spawn_cooldown = 200;
 const int enemy_max = 5;
+const int spawn_target_y = 400;
 int enemy_spawn_cooldown = max_enemy_spawn_cooldown;
 Texture2D enemy_texture;
+
+enum Behaviours
+{
+    Neutral,
+    Defencive,
+    Aggressive
+};
 
 void Setup(Enemy *enemies, Player *p)
 {
@@ -30,6 +38,23 @@ void RenderEnemies(Enemy *enemies)
         }
     }
 }
+
+void MoveEnemies(Enemy *enemies, Player *p)
+{
+    for (int i = 0; i < 200; i++)
+    {
+        if (enemies[i].spawning)
+        {
+            enemies[i].y = Lerp(enemies[i].y, spawn_target_y, 0.01);
+            enemies[i].spawn_timer--;
+            printf("at %f at %i\n", enemies[i].y, enemies[i].spawn_timer);
+        }
+        else if (enemies[i].exist)
+        {
+        }
+    }
+}
+
 void SpawnEnemies(Enemy *enemies, int alive_enemies)
 {
     while (alive_enemies < enemy_max)
@@ -41,6 +66,8 @@ void SpawnEnemies(Enemy *enemies, int alive_enemies)
                 enemies[i].exist = true;
                 enemies[i].spawning = true;
                 enemies[i].x = GetRandomValue(100, 700);
+                enemies[i].spawn_timer = max_enemy_spawn_cooldown;
+                enemies[i].y = -100;
                 // (enemies[i].speed) Remember to maybe change this?
                 goto LoopEnd;
             }
@@ -59,6 +86,14 @@ void CheckEnemies(Enemy *enemies)
         if (enemies[i].exist)
         {
             alive_enemies++;
+
+            if (enemies[i].spawning)
+            {
+                if (enemies[i].spawn_timer <= 0)
+                {
+                    enemies[i].spawning = false;
+                }
+            }
         }
     }
 

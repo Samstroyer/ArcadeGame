@@ -1,4 +1,3 @@
-#include "raylib.h"
 #include <stdio.h>
 
 Texture2D player_texture;

@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "raymath.h"
 #include "structs.c"
 #include "enemy.c"
 #include "player.c"
@@ -49,6 +50,7 @@ int main()
         Keybinds(&p);
         RenderPlayer(&p);
         UpdateProjectiles(&p);
+        MoveEnemies(enemies, &p);
         RenderEnemies(enemies);
 
         CheckEnemies(enemies);
