@@ -28,5 +28,4 @@ typedef struct
     int spawn_timer;
     bool spawning;
     bool exist;
-    bool y_switch;
 } Enemy;

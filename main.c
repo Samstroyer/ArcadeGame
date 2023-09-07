@@ -1,6 +1,5 @@
 #include "raylib.h"
 #include "enemy.c"
-#include <stdio.h>
 
 Texture2D player_texture;
 
@@ -120,6 +119,10 @@ int main()
     p.speed = 2.5f;
 
     Setup(enemies, &p);
+
+    enemies[0].exist = true;
+    enemies[0].x = 300;
+    enemies[0].y = 300;
 
     while (!WindowShouldClose())
     {
