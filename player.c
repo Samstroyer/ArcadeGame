@@ -1,10 +1,13 @@
 #include <stdio.h>
 
+// Player texture
 Texture2D player_texture;
 
+// The cooldown on weapon
 const int cooldown_max = 50;
 int fire_cooldown = cooldown_max;
 
+// Spawns a projectile at player
 void Fire(Player *p)
 {
     for (int i = 0; i < 20; i++)
@@ -20,6 +23,7 @@ void Fire(Player *p)
     }
 }
 
+// Check for input - Movement and firing
 void Keybinds(Player *p)
 {
     float speed = p->speed;
@@ -64,11 +68,13 @@ void Keybinds(Player *p)
         p->x += speed;
 }
 
+// Render the player
 void RenderPlayer(Player *p)
 {
     DrawTexture(player_texture, p->x, p->y, WHITE);
 }
 
+// Update all the projectiles the player has shot
 void UpdateProjectiles(Player *p)
 {
     for (int i = 0; i < 20; i++)

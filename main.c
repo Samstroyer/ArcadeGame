@@ -4,6 +4,7 @@
 #include "enemy.c"
 #include "player.c"
 
+// Load and resize the player and enemy images to textures
 void LoadImages()
 {
     Image player_image = LoadImage("Sprites/player.png");
@@ -22,8 +23,10 @@ void LoadImages()
     UnloadImage(enemy_image);
 }
 
+// Main function
 int main()
 {
+    // All Initializations
     SetTargetFPS(60);
     InitWindow(800, 800, "Galaga 2.0");
     LoadImages();
@@ -38,10 +41,12 @@ int main()
 
     Setup(enemies, &p);
 
+    // Temp testing
     enemies[0].exist = true;
     enemies[0].x = 300;
     enemies[0].y = 300;
 
+    // Game loop
     while (!WindowShouldClose())
     {
         BeginDrawing();

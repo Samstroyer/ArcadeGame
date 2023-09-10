@@ -1,11 +1,13 @@
 #include <stdio.h>
 
+// Variables for enemies
 const int max_enemy_spawn_cooldown = 200;
 const int enemy_max = 5;
 const int spawn_target_y = 400;
 int enemy_spawn_cooldown = max_enemy_spawn_cooldown;
 Texture2D enemy_texture;
 
+// Later on for AI
 enum Behaviours
 {
     Neutral,
@@ -13,6 +15,7 @@ enum Behaviours
     Aggressive
 };
 
+// Setup the enemy array
 void Setup(Enemy *enemies, Player *p)
 {
     for (int i = 0; i < 200; i++)
@@ -28,6 +31,7 @@ void Setup(Enemy *enemies, Player *p)
     }
 }
 
+// Render the enemies at their positions
 void RenderEnemies(Enemy *enemies)
 {
     for (int i = 0; i < 200; i++)
@@ -39,6 +43,7 @@ void RenderEnemies(Enemy *enemies)
     }
 }
 
+// Move the enemies
 void MoveEnemies(Enemy *enemies, Player *p)
 {
     for (int i = 0; i < 200; i++)
@@ -55,6 +60,7 @@ void MoveEnemies(Enemy *enemies, Player *p)
     }
 }
 
+// Spawn a enemy -- HAS A GOTO IN IT! --
 void SpawnEnemies(Enemy *enemies, int alive_enemies)
 {
     while (alive_enemies < enemy_max)
@@ -78,6 +84,7 @@ void SpawnEnemies(Enemy *enemies, int alive_enemies)
     }
 }
 
+// Check if the enemies are dead
 void CheckEnemies(Enemy *enemies)
 {
     int alive_enemies = 0;

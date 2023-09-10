@@ -1,5 +1,10 @@
 #include "raylib.h"
 
+/*
+    This file contains all the structs for the program
+    Player, Enemy and Projectile structs
+*/
+
 typedef struct
 {
     float x;
