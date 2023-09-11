@@ -15,7 +15,7 @@ void Fire(Player *p)
         if (!p->projectiles[i].exist)
         {
             p->projectiles[i].exist = true;
-            p->projectiles[i].x = p->x;
+            p->projectiles[i].x = p->x + 8;
             p->projectiles[i].y = p->y;
             p->projectiles[i].damage = p->damage;
             break;

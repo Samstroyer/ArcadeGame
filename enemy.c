@@ -19,6 +19,7 @@ void Setup(Enemy *enemies, Player *p)
         enemies[i].damage = 1;
         enemies[i].spawning = false;
         enemies[i].speed = 2;
+        enemies[i].target_timer = 0;
     }
     for (int i = 0; i < 20; i++)
     {
@@ -50,6 +51,18 @@ void MoveEnemies(Enemy *enemies, Player *p)
         }
         else if (enemies[i].exist)
         {
+            if (enemies[i].target_timer <= 0)
+            {
+                enemies[i].target.x = GetRandomValue(100, 700);
+                enemies[i].target.y = GetRandomValue(100, 500);
+                enemies[i].target_timer = 100;
+            }
+            else
+            {
+                enemies[i].x = Lerp(enemies[i].x, enemies[i].target.x, 0.01);
+                enemies[i].y = Lerp(enemies[i].y, enemies[i].target.y, 0.01);
+                enemies[i].target_timer--;
+            }
         }
     }
 }
@@ -91,12 +104,11 @@ void SpawnEnemies(Enemy *enemies, int alive_enemies)
                     enemies[i].behaviour = Dumb;
                     break;
                 }
-
-                goto LoopEnd;
+                goto SpawnEnemiesLoopEnd;
             }
         }
 
-    LoopEnd:
+    SpawnEnemiesLoopEnd:
         alive_enemies++;
     }
 }

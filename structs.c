@@ -38,10 +38,18 @@ typedef struct
 {
     float x;
     float y;
+} EnemyTarget;
+
+typedef struct
+{
+    float x;
+    float y;
     float speed;
     float damage;
     int spawn_timer;
     bool spawning;
     bool exist;
     Behaviours behaviour;
+    EnemyTarget target;
+    int target_timer;
 } Enemy;
