@@ -20,6 +20,7 @@ typedef struct
     float damage;
     float speed;
     Projectile projectiles[20];
+    long points;
 } Player;
 
 int enemy_spawn_timer_max = 180;

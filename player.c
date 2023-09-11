@@ -24,7 +24,7 @@ void Fire(Player *p)
 }
 
 // Check for input - Movement and firing
-void Keybinds(Player *p)
+void Input(Player *p)
 {
     float speed = p->speed;
     speed = IsKeyDown(KEY_LEFT_SHIFT) ? speed * 2 : speed;
@@ -86,6 +86,37 @@ void UpdateProjectiles(Player *p)
             if (p->projectiles[i].y <= -10)
             {
                 p->projectiles[i].exist = false;
+            }
+        }
+    }
+}
+
+void CheckProjectileCollisions(Enemy *enemies, Player *p)
+{
+    int enemy_sprite_width = enemy_texture.width;
+    int enemy_sprite_height = enemy_texture.height;
+
+    int player_sprite_width = player_texture.width;
+    int player_sprite_height = player_texture.height;
+
+    for (int i = 0; i < 200; i++)
+    {
+        if (!enemies[i].exist)
+            continue;
+
+        for (int j = 0; j < 20; j++)
+        {
+            if (!p->projectiles[j].exist)
+                continue;
+
+            Rectangle enemy = {enemies[i].x, enemies[i].y, enemy_sprite_width, enemy_sprite_height};
+            Rectangle projectile = {p->projectiles[j].x, p->projectiles[j].y, 10, 10};
+
+            if (CheckCollisionRecs(enemy, projectile))
+            {
+                p->projectiles[j].exist = false;
+                enemies[i].exist = false;
+                p->points++;
             }
         }
     }

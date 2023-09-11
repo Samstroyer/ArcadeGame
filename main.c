@@ -4,6 +4,15 @@
 #include "enemy.c"
 #include "player.c"
 
+typedef enum game_textures_e
+{
+    TEXTURE_PLAYER,
+    TEXTURE_ENEMY,
+    TEXTURE_NUM_TEXTURES
+} game_textures_e;
+
+Texture2D game_textures[TEXTURE_NUM_TEXTURES];
+
 // Load and resize the player and enemy images to textures
 void LoadImages()
 {
@@ -41,24 +50,24 @@ int main()
 
     Setup(enemies, &p);
 
-    // Temp testing
-    enemies[0].exist = true;
-    enemies[0].x = 300;
-    enemies[0].y = 300;
-
     // Game loop
     while (!WindowShouldClose())
     {
         BeginDrawing();
         ClearBackground(BLACK);
 
-        Keybinds(&p);
-        RenderPlayer(&p);
+        Input(&p);
+        CheckEnemies(enemies);
+
         UpdateProjectiles(&p);
         MoveEnemies(enemies, &p);
+
+        CheckProjectileCollisions(enemies, &p);
+
+        RenderPlayer(&p);
         RenderEnemies(enemies);
 
-        CheckEnemies(enemies);
+        // printf("Score: %li\n", p.points);
 
         EndDrawing();
     }

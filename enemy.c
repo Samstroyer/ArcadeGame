@@ -4,20 +4,23 @@
 const int max_enemy_spawn_cooldown = 200;
 const int enemy_max = 5;
 const int spawn_target_y = 400;
+const int spawn_intervall = 0;
 int enemy_spawn_cooldown = max_enemy_spawn_cooldown;
 Texture2D enemy_texture;
 
 // Later on for AI
-enum Behaviours
+typedef enum Behaviours
 {
     Neutral,
     Defencive,
     Aggressive
-};
+} Behaviours;
 
 // Setup the enemy array
 void Setup(Enemy *enemies, Player *p)
 {
+    p->points = 0;
+
     for (int i = 0; i < 200; i++)
     {
         enemies[i].exist = false;
@@ -52,7 +55,6 @@ void MoveEnemies(Enemy *enemies, Player *p)
         {
             enemies[i].y = Lerp(enemies[i].y, spawn_target_y, 0.01);
             enemies[i].spawn_timer--;
-            printf("at %f at %i\n", enemies[i].y, enemies[i].spawn_timer);
         }
         else if (enemies[i].exist)
         {
@@ -105,6 +107,4 @@ void CheckEnemies(Enemy *enemies)
     }
 
     SpawnEnemies(enemies, alive_enemies);
-
-    printf("Amount of alive enemies: %i\n", alive_enemies);
 }
