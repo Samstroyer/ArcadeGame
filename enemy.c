@@ -44,23 +44,64 @@ void MoveEnemies(Enemy *enemies, Player *p)
 {
     for (int i = 0; i < 200; i++)
     {
+        // If it is spawning it should move towards the spawn area
         if (enemies[i].spawning)
         {
             enemies[i].y = Lerp(enemies[i].y, spawn_target_y, 0.01);
             enemies[i].spawn_timer--;
         }
+        // Else if they should move
         else if (enemies[i].exist)
         {
+            // If they don't have a target they get a target here
             if (enemies[i].target_timer <= 0)
             {
-                enemies[i].target.x = GetRandomValue(100, 700);
-                enemies[i].target.y = GetRandomValue(100, 500);
-                enemies[i].target_timer = 100;
+
+                switch (enemies[i].behaviour)
+                {
+                case Neutral:
+                    enemies[i].target.x = GetRandomValue(100, 700);
+                    enemies[i].target.y = GetRandomValue(100, 500);
+                    enemies[i].target_timer = 120;
+                    break;
+                case Aggressive:
+                    enemies[i].target.x = p->x + GetRandomValue(-200, 200);
+                    enemies[i].target.y = GetRandomValue(300, 400);
+                    enemies[i].target_timer = 30;
+                    break;
+                case Dumb:
+                    enemies[i].target.x = GetRandomValue(100, 700);
+                    enemies[i].target.y = GetRandomValue(100, 500);
+                    enemies[i].target_timer = 100;
+                    break;
+
+                default:
+                    break;
+                }
             }
+            // Move towards the target they are assigned
             else
             {
-                enemies[i].x = Lerp(enemies[i].x, enemies[i].target.x, 0.01);
-                enemies[i].y = Lerp(enemies[i].y, enemies[i].target.y, 0.01);
+                double lerping;
+
+                switch (enemies[i].behaviour)
+                {
+                case Neutral:
+                    lerping = 0.02;
+                    break;
+                case Aggressive:
+                    lerping = 0.04;
+                    break;
+                case Dumb:
+                    lerping = (double)(GetRandomValue(1, 3)) / 100;
+                    break;
+                default:
+                    lerping = 0.01;
+                    break;
+                }
+
+                enemies[i].x = Lerp(enemies[i].x, enemies[i].target.x, lerping);
+                enemies[i].y = Lerp(enemies[i].y, enemies[i].target.y, lerping);
                 enemies[i].target_timer--;
             }
         }
@@ -85,15 +126,11 @@ void SpawnEnemies(Enemy *enemies, int alive_enemies)
                 enemies[i].y = -100;
 
                 // Maybe fix different HP based on behaviour
-                switch (GetRandomValue(0, 3))
+                switch (GetRandomValue(0, 2))
                 {
                 case Neutral:
                     enemies[i].speed = 2;
                     enemies[i].behaviour = Neutral;
-                    break;
-                case Defencive:
-                    enemies[i].speed = 1;
-                    enemies[i].behaviour = Defencive;
                     break;
                 case Aggressive:
                     enemies[i].speed = 3;

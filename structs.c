@@ -9,7 +9,6 @@
 typedef enum Behaviours
 {
     Neutral,
-    Defencive,
     Aggressive,
     Dumb
 } Behaviours;

@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "raymath.h"
+#include <stdlib.h>
 #include "structs.c"
 #include "enemy.c"
 #include "player.c"
