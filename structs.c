@@ -5,6 +5,15 @@
     Player, Enemy and Projectile structs
 */
 
+// Later on for AI
+typedef enum Behaviours
+{
+    Neutral,
+    Defencive,
+    Aggressive,
+    Dumb
+} Behaviours;
+
 typedef struct
 {
     float x;
@@ -34,4 +43,5 @@ typedef struct
     int spawn_timer;
     bool spawning;
     bool exist;
+    Behaviours behaviour;
 } Enemy;

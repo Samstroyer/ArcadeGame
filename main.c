@@ -4,15 +4,6 @@
 #include "enemy.c"
 #include "player.c"
 
-typedef enum game_textures_e
-{
-    TEXTURE_PLAYER,
-    TEXTURE_ENEMY,
-    TEXTURE_NUM_TEXTURES
-} game_textures_e;
-
-Texture2D game_textures[TEXTURE_NUM_TEXTURES];
-
 // Load and resize the player and enemy images to textures
 void LoadImages()
 {

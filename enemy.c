@@ -8,14 +8,6 @@ const int spawn_intervall = 0;
 int enemy_spawn_cooldown = max_enemy_spawn_cooldown;
 Texture2D enemy_texture;
 
-// Later on for AI
-typedef enum Behaviours
-{
-    Neutral,
-    Defencive,
-    Aggressive
-} Behaviours;
-
 // Setup the enemy array
 void Setup(Enemy *enemies, Player *p)
 {
@@ -72,11 +64,34 @@ void SpawnEnemies(Enemy *enemies, int alive_enemies)
             if (!enemies[i].exist)
             {
                 enemies[i].exist = true;
+
                 enemies[i].spawning = true;
-                enemies[i].x = GetRandomValue(100, 700);
                 enemies[i].spawn_timer = max_enemy_spawn_cooldown;
+
+                enemies[i].x = GetRandomValue(100, 700);
                 enemies[i].y = -100;
-                // (enemies[i].speed) Remember to maybe change this?
+
+                // Maybe fix different HP based on behaviour
+                switch (GetRandomValue(0, 3))
+                {
+                case Neutral:
+                    enemies[i].speed = 2;
+                    enemies[i].behaviour = Neutral;
+                    break;
+                case Defencive:
+                    enemies[i].speed = 1;
+                    enemies[i].behaviour = Defencive;
+                    break;
+                case Aggressive:
+                    enemies[i].speed = 3;
+                    enemies[i].behaviour = Aggressive;
+                    break;
+                case Dumb:
+                    enemies[i].speed = 2;
+                    enemies[i].behaviour = Dumb;
+                    break;
+                }
+
                 goto LoopEnd;
             }
         }
