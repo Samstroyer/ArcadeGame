@@ -2,6 +2,7 @@
 
 // Player texture
 Texture2D player_texture;
+Texture2D projectile_texture;
 
 // The cooldown on weapon
 const int cooldown_max = 50;
@@ -82,7 +83,7 @@ void UpdateProjectiles(Player *p)
         if (p->projectiles[i].exist)
         {
             p->projectiles[i].y -= 3.5;
-            DrawRectangle(p->projectiles[i].x, p->projectiles[i].y, 10, 10, RED);
+            DrawTexture(projectile_texture, p->projectiles[i].x, p->projectiles[i].y, WHITE);
             if (p->projectiles[i].y <= -10)
             {
                 p->projectiles[i].exist = false;

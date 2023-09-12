@@ -65,17 +65,14 @@ void MoveEnemies(Enemy *enemies, Player *p)
                     enemies[i].target_timer = 120;
                     break;
                 case Aggressive:
-                    enemies[i].target.x = p->x + GetRandomValue(-200, 200);
+                    enemies[i].target.x = p->x + GetRandomValue(-100, 100);
                     enemies[i].target.y = GetRandomValue(300, 400);
                     enemies[i].target_timer = 30;
                     break;
                 case Dumb:
                     enemies[i].target.x = GetRandomValue(100, 700);
-                    enemies[i].target.y = GetRandomValue(100, 500);
+                    enemies[i].target.y = GetRandomValue(100, 300);
                     enemies[i].target_timer = 100;
-                    break;
-
-                default:
                     break;
                 }
             }
@@ -87,16 +84,13 @@ void MoveEnemies(Enemy *enemies, Player *p)
                 switch (enemies[i].behaviour)
                 {
                 case Neutral:
-                    lerping = 0.02;
+                    lerping = 0.015;
                     break;
                 case Aggressive:
-                    lerping = 0.04;
+                    lerping = 0.03;
                     break;
                 case Dumb:
                     lerping = (double)(GetRandomValue(1, 3)) / 100;
-                    break;
-                default:
-                    lerping = 0.01;
                     break;
                 }
 
