@@ -58,6 +58,7 @@ int main()
 
         Input(&p);
         CheckEnemies(enemies);
+        FireEnemies(enemies);
 
         UpdateProjectiles(&p);
         MoveEnemies(enemies, &p);
@@ -66,6 +67,7 @@ int main()
 
         RenderPlayer(&p);
         RenderEnemies(enemies);
+        RenderEnemyProjectiles(enemies);
 
         DrawText(TextFormat("Points: %i", p.points), 20, 750, 45, WHITE);
 

@@ -8,6 +8,8 @@ const int spawn_intervall = 0;
 int enemy_spawn_cooldown = max_enemy_spawn_cooldown;
 Texture2D enemy_texture;
 
+Projectile enemy_projectiles[500];
+
 // Setup the enemy array
 void Setup(Enemy *enemies, Player *p)
 {
@@ -25,6 +27,10 @@ void Setup(Enemy *enemies, Player *p)
     {
         p->projectiles[i].exist = false;
     }
+    for (int i = 0; i < 50; i++)
+    {
+        enemy_projectiles[i].exist = false;
+    }
 }
 
 // Render the enemies at their positions
@@ -35,6 +41,63 @@ void RenderEnemies(Enemy *enemies)
         if (enemies[i].exist)
         {
             DrawTexture(enemy_texture, enemies[i].x, enemies[i].y, WHITE);
+        }
+    }
+}
+
+// Makes the enemies fire projectiles based on their fire rate
+void FireEnemies(Enemy *enemies)
+{
+    for (int i = 0; i < 200; i++)
+    {
+        if (enemies[i].exist)
+        {
+            if (enemies[i].fire_timer <= 0)
+            {
+                for (int j = 0; j < 500; j++)
+                {
+                    if (!enemy_projectiles[j].exist)
+                    {
+                        enemy_projectiles[j].exist = true;
+                        // enemy_projectiles[i].damage
+                        enemy_projectiles[j].x = enemies[i].x;
+                        enemy_projectiles[j].y = enemies[i].y;
+
+                        switch (enemies[i].behaviour)
+                        {
+                        case Neutral:
+                            enemy_projectiles[j].damage = 1;
+                            break;
+                        case Aggressive:
+                            enemy_projectiles[j].damage = 2;
+                            break;
+                        case Dumb:
+                            enemy_projectiles[j].damage = 1;
+                            break;
+
+                        default:
+                            break;
+                        }
+                    }
+                }
+                enemies[i].fire_timer = 200;
+            }
+            else
+            {
+                enemies[i].fire_timer--;
+            }
+        }
+    }
+}
+
+void RenderEnemyProjectiles(Enemy *enemies)
+{
+    for (int i = 0; i < 500; i++)
+    {
+        if (enemy_projectiles[i].exist)
+        {
+            enemy_projectiles[i].y += 2;
+            DrawRectangle(enemy_projectiles[i].x, enemy_projectiles[i].y, 5, 5, RED);
         }
     }
 }
@@ -118,6 +181,8 @@ void SpawnEnemies(Enemy *enemies, int alive_enemies)
 
                 enemies[i].x = GetRandomValue(100, 700);
                 enemies[i].y = -100;
+
+                enemies[i].fire_timer = 100;
 
                 // Maybe fix different HP based on behaviour
                 switch (GetRandomValue(0, 2))

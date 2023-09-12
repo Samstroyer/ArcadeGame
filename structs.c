@@ -45,10 +45,11 @@ typedef struct
     float y;
     float speed;
     float damage;
-    int spawn_timer;
+    short spawn_timer;
     bool spawning;
     bool exist;
     Behaviours behaviour;
     EnemyTarget target;
-    int target_timer;
+    short target_timer;
+    short fire_timer;
 } Enemy;
