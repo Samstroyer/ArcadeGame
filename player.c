@@ -4,7 +4,7 @@
 Texture2D player_texture;
 Texture2D projectile_texture;
 
-// The cooldown on weapon
+// Weapon variables
 const int cooldown_max = 50;
 int fire_cooldown = cooldown_max;
 
@@ -16,9 +16,8 @@ void Fire(Player *p)
         if (!p->projectiles[i].exist)
         {
             p->projectiles[i].exist = true;
-            p->projectiles[i].x = p->x + 8;
-            p->projectiles[i].y = p->y;
-            p->projectiles[i].damage = p->damage;
+            p->projectiles[i].pos = (Vector2){p->pos.x + 8, p->pos.y};
+            p->projectiles->projectile_type = p->selected_projectile;
             break;
         }
     }
@@ -30,21 +29,21 @@ void Input(Player *p)
     float speed = p->speed;
     speed = IsKeyDown(KEY_LEFT_SHIFT) ? speed * 2 : speed;
 
-    if (p->x < 0)
+    if (p->pos.x < 0)
     {
-        p->x = GetScreenWidth() - player_texture.width;
+        p->pos.x = GetScreenWidth() - player_texture.width;
     }
-    else if (p->x + player_texture.width > GetScreenWidth())
+    else if (p->pos.x + player_texture.width > GetScreenWidth())
     {
-        p->x = 0;
+        p->pos.x = 0;
     }
 
     bool limit_up = false, limit_down = false;
-    if (p->y + player_texture.height >= GetScreenHeight())
+    if (p->pos.y + player_texture.height >= GetScreenHeight())
     {
         limit_down = true;
     }
-    else if (p->y <= 600)
+    else if (p->pos.y <= 600)
     {
         limit_up = true;
     }
@@ -60,19 +59,19 @@ void Input(Player *p)
     }
 
     if (IsKeyDown(KEY_W) && !limit_up)
-        p->y -= speed;
+        p->pos.y -= speed;
     if (IsKeyDown(KEY_S) && !limit_down)
-        p->y += speed;
+        p->pos.y += speed;
     if (IsKeyDown(KEY_A))
-        p->x -= speed;
+        p->pos.x -= speed;
     if (IsKeyDown(KEY_D))
-        p->x += speed;
+        p->pos.x += speed;
 }
 
 // Render the player
 void RenderPlayer(Player *p)
 {
-    DrawTexture(player_texture, p->x, p->y, WHITE);
+    DrawTexture(player_texture, p->pos.x, p->pos.y, WHITE);
 }
 
 // Update all the projectiles the player has shot
@@ -82,9 +81,9 @@ void UpdateProjectiles(Player *p)
     {
         if (p->projectiles[i].exist)
         {
-            p->projectiles[i].y -= 3.5;
-            DrawTexture(projectile_texture, p->projectiles[i].x, p->projectiles[i].y, WHITE);
-            if (p->projectiles[i].y <= -10)
+            p->projectiles[i].pos.y -= 3.5;
+            DrawTexture(projectile_texture, p->projectiles[i].pos.x, p->projectiles[i].pos.y, WHITE);
+            if (p->projectiles[i].pos.y <= -10)
             {
                 p->projectiles[i].exist = false;
             }
@@ -110,8 +109,8 @@ void CheckProjectileCollisions(Enemy *enemies, Player *p)
             if (!p->projectiles[j].exist)
                 continue;
 
-            Rectangle enemy = {enemies[i].x, enemies[i].y, enemy_sprite_width, enemy_sprite_height};
-            Rectangle projectile = {p->projectiles[j].x, p->projectiles[j].y, 10, 10};
+            Rectangle enemy = {enemies[i].pos.x, enemies[i].pos.y, enemy_sprite_width, enemy_sprite_height};
+            Rectangle projectile = {p->projectiles[j].pos.x, p->projectiles[j].pos.y, 10, 10};
 
             if (CheckCollisionRecs(enemy, projectile))
             {

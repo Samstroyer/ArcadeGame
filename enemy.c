@@ -10,29 +10,6 @@ Texture2D enemy_texture;
 
 Projectile enemy_projectiles[500];
 
-// Setup the enemy array
-void Setup(Enemy *enemies, Player *p)
-{
-    p->points = 0;
-
-    for (int i = 0; i < 200; i++)
-    {
-        enemies[i].exist = false;
-        enemies[i].damage = 1;
-        enemies[i].spawning = false;
-        enemies[i].speed = 2;
-        enemies[i].target_timer = 0;
-    }
-    for (int i = 0; i < 20; i++)
-    {
-        p->projectiles[i].exist = false;
-    }
-    for (int i = 0; i < 50; i++)
-    {
-        enemy_projectiles[i].exist = false;
-    }
-}
-
 // Render the enemies at their positions
 void RenderEnemies(Enemy *enemies)
 {
@@ -40,7 +17,7 @@ void RenderEnemies(Enemy *enemies)
     {
         if (enemies[i].exist)
         {
-            DrawTexture(enemy_texture, enemies[i].x, enemies[i].y, WHITE);
+            DrawTexture(enemy_texture, enemies[i].pos.x, enemies[i].pos.y, WHITE);
         }
     }
 }
@@ -59,45 +36,31 @@ void FireEnemies(Enemy *enemies)
                     if (!enemy_projectiles[j].exist)
                     {
                         enemy_projectiles[j].exist = true;
-                        // enemy_projectiles[i].damage
-                        enemy_projectiles[j].x = enemies[i].x;
-                        enemy_projectiles[j].y = enemies[i].y;
 
-                        switch (enemies[i].behaviour)
-                        {
-                        case Neutral:
-                            enemy_projectiles[j].damage = 1;
-                            break;
-                        case Aggressive:
-                            enemy_projectiles[j].damage = 2;
-                            break;
-                        case Dumb:
-                            enemy_projectiles[j].damage = 1;
-                            break;
-
-                        default:
-                            break;
-                        }
+                        // enemy_projectiles[j].projectile_type =
+                        enemy_projectiles[j].pos = enemies[i].pos;
+                        enemy_projectiles[j].projectile_type = enemies[i].projectile_type;
                     }
                 }
-                enemies[i].fire_timer = 200;
             }
-            else
-            {
-                enemies[i].fire_timer--;
-            }
+            enemies[i].fire_timer = 200;
+        }
+        else
+        {
+            enemies[i].fire_timer--;
         }
     }
 }
 
+// Moves and renders the projectiles...
 void RenderEnemyProjectiles(Enemy *enemies)
 {
     for (int i = 0; i < 500; i++)
     {
         if (enemy_projectiles[i].exist)
         {
-            enemy_projectiles[i].y += 2;
-            DrawRectangle(enemy_projectiles[i].x, enemy_projectiles[i].y, 5, 5, RED);
+            enemy_projectiles[i].pos.y += 2;
+            DrawRectangle(enemy_projectiles[i].pos.x, enemy_projectiles[i].pos.y, 5, 5, RED);
         }
     }
 }
@@ -110,7 +73,7 @@ void MoveEnemies(Enemy *enemies, Player *p)
         // If it is spawning it should move towards the spawn area
         if (enemies[i].spawning)
         {
-            enemies[i].y = Lerp(enemies[i].y, spawn_target_y, 0.01);
+            enemies[i].pos.y = Lerp(enemies[i].pos.y, spawn_target_y, 0.01);
             enemies[i].spawn_timer--;
         }
         // Else if they should move
@@ -120,47 +83,39 @@ void MoveEnemies(Enemy *enemies, Player *p)
             if (enemies[i].target_timer <= 0)
             {
 
-                switch (enemies[i].behaviour)
+                switch (enemies[i].enemy_type)
                 {
-                case Neutral:
-                    enemies[i].target.x = GetRandomValue(100, 700);
-                    enemies[i].target.y = GetRandomValue(100, 500);
-                    enemies[i].target_timer = 120;
+                case ENEMY_SLOW:
+                    enemies[i].target.pos = (Vector2){GetRandomValue(100, 700), GetRandomValue(100, 500)};
                     break;
-                case Aggressive:
-                    enemies[i].target.x = p->x + GetRandomValue(-100, 100);
-                    enemies[i].target.y = GetRandomValue(300, 400);
-                    enemies[i].target_timer = 30;
-                    break;
-                case Dumb:
-                    enemies[i].target.x = GetRandomValue(100, 700);
-                    enemies[i].target.y = GetRandomValue(100, 300);
-                    enemies[i].target_timer = 100;
-                    break;
-                }
-            }
-            // Move towards the target they are assigned
-            else
-            {
-                double lerping;
 
-                switch (enemies[i].behaviour)
-                {
-                case Neutral:
-                    lerping = 0.015;
+                case ENEMY_FAST:
+                    enemies[i].target.pos = (Vector2){GetRandomValue(100, 700), GetRandomValue(100, 500)};
                     break;
-                case Aggressive:
-                    lerping = 0.03;
+
+                case ENEMY_EXPLOSIVE:
+                    enemies[i].target.pos = (Vector2){p->pos.x - GetRandomValue(-50, 50), GetRandomValue(300, 500)};
                     break;
-                case Dumb:
-                    lerping = (double)(GetRandomValue(1, 3)) / 100;
+
+                case ENEMY_LINGERING:
+                    enemies[i].target.pos = (Vector2){p->pos.x - GetRandomValue(-100, 100), GetRandomValue(100, 500)};
+                    break;
+                default:
+                    puts("Out of range Enemy.c:104");
                     break;
                 }
 
-                enemies[i].x = Lerp(enemies[i].x, enemies[i].target.x, lerping);
-                enemies[i].y = Lerp(enemies[i].y, enemies[i].target.y, lerping);
-                enemies[i].target_timer--;
+                enemies[i].target_timer = enemy_types[enemies[i].enemy_type].max_target_cooldown;
             }
+        }
+        // Move towards the target they are assigned
+        else
+        {
+            float lerp_speed = enemy_types[enemies[i].enemy_type].speed / 100;
+            enemies[i].pos.x = Lerp(enemies[i].pos.x, enemies[i].target.pos.x, lerp_speed);
+            enemies[i].pos.y = Lerp(enemies[i].pos.y, enemies[i].target.pos.y, lerp_speed);
+
+            enemies[i].target_timer--;
         }
     }
 }
@@ -168,38 +123,29 @@ void MoveEnemies(Enemy *enemies, Player *p)
 // Spawn a enemy -- HAS A GOTO IN IT! --
 void SpawnEnemies(Enemy *enemies, int alive_enemies)
 {
+    if (alive_enemies >= enemy_max)
+        return;
+
     while (alive_enemies < enemy_max)
     {
         for (int i = 0; i < 200; i++)
         {
             if (!enemies[i].exist)
             {
+                char type = GetRandomValue(0, ENEMY_NUM - 1);
+                enemies[i].enemy_type = type;
+                enemies[i].projectile_type = type;
+
                 enemies[i].exist = true;
-
                 enemies[i].spawning = true;
-                enemies[i].spawn_timer = max_enemy_spawn_cooldown;
 
-                enemies[i].x = GetRandomValue(100, 700);
-                enemies[i].y = -100;
+                enemies[i].pos.x = GetRandomValue(100, 700);
+                enemies[i].pos.y = -100;
 
-                enemies[i].fire_timer = 100;
-
-                // Maybe fix different HP based on behaviour
-                switch (GetRandomValue(0, 2))
-                {
-                case Neutral:
-                    enemies[i].speed = 2;
-                    enemies[i].behaviour = Neutral;
-                    break;
-                case Aggressive:
-                    enemies[i].speed = 3;
-                    enemies[i].behaviour = Aggressive;
-                    break;
-                case Dumb:
-                    enemies[i].speed = 2;
-                    enemies[i].behaviour = Dumb;
-                    break;
-                }
+                enemies[i].hp = enemy_types[type].max_hp;
+                enemies[i].fire_timer = enemy_types[type].max_fire_cooldown;
+                enemies[i].spawn_timer = enemy_types[type].max_spawn_timer;
+                enemies[i].target_timer = enemy_types[type].max_target_cooldown;
                 goto SpawnEnemiesLoopEnd;
             }
         }

@@ -31,6 +31,25 @@ void LoadImages()
     UnloadImage(background_image);
 }
 
+// Setup all the members of the arrays
+void Setup(Enemy *enemies, Player *p)
+{
+    p->points = 0;
+
+    for (int i = 0; i < 200; i++)
+    {
+        enemies[i].exist = false;
+    }
+    for (int i = 0; i < 20; i++)
+    {
+        p->projectiles[i].exist = false;
+    }
+    for (int i = 0; i < 50; i++)
+    {
+        enemy_projectiles[i].exist = false;
+    }
+}
+
 // Main function
 int main()
 {
@@ -42,9 +61,9 @@ int main()
     Enemy enemies[200];
 
     Player p;
-    p.x = (GetScreenWidth() / 2) - (player_texture.width / 2);
-    p.y = GetScreenHeight() - 40;
-    p.damage = 1;
+    p.pos.x = (GetScreenWidth() / 2) - (player_texture.width / 2);
+    p.pos.y = GetScreenHeight() - 40;
+    p.selected_projectile = PROJECTILE_SLOW; // 0
     p.speed = 2.5f;
 
     Setup(enemies, &p);
