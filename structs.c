@@ -16,8 +16,6 @@ typedef enum
 
 typedef struct
 {
-    float x;
-    float y;
     float damage;
     float speed;
 } ProjectileTypeInfo;
