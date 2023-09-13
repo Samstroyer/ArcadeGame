@@ -5,30 +5,24 @@
 #include "enemy.c"
 #include "player.c"
 
-Texture2D background;
-
 // Load and resize the player and enemy images to textures
 void LoadImages()
 {
     Image player_image = LoadImage("Sprites/player.png");
     Image enemy_image = LoadImage("Sprites/enemy.png");
-    Image background_image = LoadImage("Sprites/background.png");
 
     ImageResize(&player_image, 25, 25);
     ImageResize(&enemy_image, 25, 25);
-    ImageResize(&background_image, 1100, 800);
 
     ImageRotateCCW(&enemy_image);
     ImageRotateCCW(&enemy_image);
 
     player_texture = LoadTextureFromImage(player_image);
     enemy_texture = LoadTextureFromImage(enemy_image);
-    background = LoadTextureFromImage(background_image);
     projectile_texture = LoadTexture("Sprites/projectile.png");
 
     UnloadImage(player_image);
     UnloadImage(enemy_image);
-    UnloadImage(background_image);
 }
 
 // Setup all the members of the arrays
@@ -39,6 +33,7 @@ void Setup(Enemy *enemies, Player *p)
     for (int i = 0; i < 200; i++)
     {
         enemies[i].exist = false;
+        enemies[i].target_timer = 0;
     }
     for (int i = 0; i < 20; i++)
     {
@@ -54,8 +49,8 @@ void Setup(Enemy *enemies, Player *p)
 int main()
 {
     // All Initializations
-    SetTargetFPS(60);
     InitWindow(800, 800, "Galaga 2.0");
+    SetTargetFPS(100);
     LoadImages();
 
     Enemy enemies[200];
@@ -73,7 +68,7 @@ int main()
     {
         BeginDrawing();
         ClearBackground(BLACK);
-        DrawTexture(background, -150, 0, WHITE);
+        // DrawTexture(background, -150, 0, WHITE);
 
         Input(&p);
         CheckEnemies(enemies);

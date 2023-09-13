@@ -87,8 +87,8 @@ typedef struct
 } Enemy;
 
 EnemyTypeInfo enemy_types[ENEMY_NUM] = {
-    (EnemyTypeInfo){.max_spawn_timer = 150, .max_hp = 100, .speed = 2, .projectile_type_e = PROJECTILE_SLOW, .max_fire_cooldown = 100, .max_target_cooldown = 180},     // Slow
-    (EnemyTypeInfo){.max_spawn_timer = 150, .max_hp = 50, .speed = 4, .projectile_type_e = PROJECTILE_FAST, .max_fire_cooldown = 100, .max_target_cooldown = 180},      // Fast
-    (EnemyTypeInfo){.max_spawn_timer = 150, .max_hp = 20, .speed = 3, .projectile_type_e = PROJECTILE_EXPLOSIVE, .max_fire_cooldown = 100, .max_target_cooldown = 30},  // Explosive
-    (EnemyTypeInfo){.max_spawn_timer = 150, .max_hp = 20, .speed = 3, .projectile_type_e = PROJECTILE_LINGERING, .max_fire_cooldown = 100, .max_target_cooldown = 180}, // Lingering
+    (EnemyTypeInfo){.max_spawn_timer = 300, .max_hp = 100, .speed = 2, .projectile_type_e = PROJECTILE_SLOW, .max_fire_cooldown = 100, .max_target_cooldown = 180},     // Slow
+    (EnemyTypeInfo){.max_spawn_timer = 300, .max_hp = 50, .speed = 4, .projectile_type_e = PROJECTILE_FAST, .max_fire_cooldown = 100, .max_target_cooldown = 180},      // Fast
+    (EnemyTypeInfo){.max_spawn_timer = 300, .max_hp = 20, .speed = 3, .projectile_type_e = PROJECTILE_EXPLOSIVE, .max_fire_cooldown = 100, .max_target_cooldown = 30},  // Explosive
+    (EnemyTypeInfo){.max_spawn_timer = 300, .max_hp = 20, .speed = 3, .projectile_type_e = PROJECTILE_LINGERING, .max_fire_cooldown = 100, .max_target_cooldown = 180}, // Lingering
 };

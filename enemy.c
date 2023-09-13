@@ -29,6 +29,7 @@ void FireEnemies(Enemy *enemies)
     {
         if (enemies[i].exist)
         {
+            // Shoot if the time has come
             if (enemies[i].fire_timer <= 0)
             {
                 for (int j = 0; j < 500; j++)
@@ -37,17 +38,18 @@ void FireEnemies(Enemy *enemies)
                     {
                         enemy_projectiles[j].exist = true;
 
-                        // enemy_projectiles[j].projectile_type =
                         enemy_projectiles[j].pos = enemies[i].pos;
                         enemy_projectiles[j].projectile_type = enemies[i].projectile_type;
+                        break;
                     }
                 }
+                enemies[i].fire_timer = 200;
             }
-            enemies[i].fire_timer = 200;
-        }
-        else
-        {
-            enemies[i].fire_timer--;
+            // Else you count the time til the time comes
+            else
+            {
+                enemies[i].fire_timer--;
+            }
         }
     }
 }
@@ -107,15 +109,15 @@ void MoveEnemies(Enemy *enemies, Player *p)
 
                 enemies[i].target_timer = enemy_types[enemies[i].enemy_type].max_target_cooldown;
             }
-        }
-        // Move towards the target they are assigned
-        else
-        {
-            float lerp_speed = enemy_types[enemies[i].enemy_type].speed / 100;
-            enemies[i].pos.x = Lerp(enemies[i].pos.x, enemies[i].target.pos.x, lerp_speed);
-            enemies[i].pos.y = Lerp(enemies[i].pos.y, enemies[i].target.pos.y, lerp_speed);
+            // Move towards the target they are assigned
+            else
+            {
+                double lerp_speed = enemy_types[enemies[i].enemy_type].speed / 100;
+                enemies[i].pos.x = Lerp(enemies[i].pos.x, enemies[i].target.pos.x, lerp_speed);
+                enemies[i].pos.y = Lerp(enemies[i].pos.y, enemies[i].target.pos.y, lerp_speed);
 
-            enemies[i].target_timer--;
+                enemies[i].target_timer--;
+            }
         }
     }
 }
