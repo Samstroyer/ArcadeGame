@@ -90,3 +90,21 @@ EnemyTypeInfo enemy_types[ENEMY_NUM] = {
     (EnemyTypeInfo){.max_spawn_timer = 300, .max_hp = 20, .speed = 3, .projectile_type_e = PROJECTILE_EXPLOSIVE, .max_fire_cooldown = 100, .max_target_cooldown = 30},  // Explosive
     (EnemyTypeInfo){.max_spawn_timer = 300, .max_hp = 20, .speed = 3, .projectile_type_e = PROJECTILE_LINGERING, .max_fire_cooldown = 100, .max_target_cooldown = 180}, // Lingering
 };
+
+typedef struct
+{
+    Vector2 pos;
+    bool exist;
+} FormationEnemy;
+
+typedef struct
+{
+    Vector2 middle;
+    Vector2 velocity;
+    Vector2 target;
+    FormationEnemy formation_members[4];
+    bool exist;
+    float rotation;
+    float radius;
+    float spin_speed;
+} CircleFormation;

@@ -4,11 +4,14 @@
 const int max_enemy_spawn_cooldown = 200;
 const int enemy_max = 5;
 const int spawn_target_y = 400;
-const int spawn_intervall = 0;
+const int max_spawn_interval = 300;
+int spawn_interval = max_spawn_interval;
 int enemy_spawn_cooldown = max_enemy_spawn_cooldown;
-Texture2D enemy_texture;
 
 Projectile enemy_projectiles[500];
+
+CircleFormation formations[4];
+int current_formations = 0;
 
 // Render the enemies at their positions
 void RenderEnemies(Enemy *enemies)
@@ -62,7 +65,7 @@ void RenderEnemyProjectiles(Enemy *enemies)
         if (enemy_projectiles[i].exist)
         {
             enemy_projectiles[i].pos.y += 2;
-            DrawRectangle(enemy_projectiles[i].pos.x, enemy_projectiles[i].pos.y, 5, 5, RED);
+            DrawTexture(projectile_texture, enemy_projectiles[i].pos.x, enemy_projectiles[i].pos.y, WHITE);
         }
     }
 }
@@ -128,7 +131,9 @@ void SpawnEnemies(Enemy *enemies, int alive_enemies)
     if (alive_enemies >= enemy_max)
         return;
 
-    while (alive_enemies < enemy_max)
+    int enemies_to_spawn = GetRandomValue(1, 4);
+
+    while (enemies_to_spawn > 0)
     {
         for (int i = 0; i < 200; i++)
         {
@@ -153,7 +158,117 @@ void SpawnEnemies(Enemy *enemies, int alive_enemies)
         }
 
     SpawnEnemiesLoopEnd:
-        alive_enemies++;
+        enemies_to_spawn--;
+    }
+}
+
+void SpawnFormation()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (!formations[i].exist)
+        {
+            formations[i].exist = true;
+
+            formations[i].rotation = 0;
+            formations[i].radius = GetRandomValue(20, 50);
+            formations[i].spin_speed = formations[i].radius * 0.001;
+            formations[i].middle = (Vector2){GetRandomValue(100, 700), -10};
+            formations[i].target = (Vector2){GetRandomValue(formations[i].radius, GetRenderWidth() - formations[i].radius)};
+
+            for (int j = 0; j < 4; j++)
+            {
+                float x = cos(formations[i].rotation + (j * (PI / 2)));
+                float y = sin(formations[i].rotation + (j * (PI / 2)));
+
+                formations[i].formation_members[j].pos = (Vector2){x, y};
+
+                formations[i].formation_members[j].exist = true;
+            }
+
+            goto FormationSpawnLoopBreak;
+        }
+    }
+FormationSpawnLoopBreak:
+    return;
+}
+
+void UpdateFormations()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (formations[i].exist)
+        {
+            if (formations[i].middle.x == formations[i].target.x && formations[i].middle.y == formations[i].target.y)
+            {
+                formations[i].target = (Vector2){GetRandomValue(formations[i].radius, GetRenderWidth() - formations[i].radius), GetRandomValue(formations[i].radius, 500 - formations[i].radius)};
+            }
+
+            bool has_members = false;
+            for (int j = 0; j < 4; j++)
+            {
+                if (formations[i].formation_members[j].exist)
+                {
+                    float x = cos(formations[i].rotation + (j * (PI / 2))) * formations[i].radius;
+                    float y = sin(formations[i].rotation + (j * (PI / 2))) * formations[i].radius;
+
+                    formations[i].formation_members[j].pos = (Vector2){x, y};
+
+                    has_members = true;
+                }
+            }
+
+            formations[i].exist = has_members;
+
+            formations[i].rotation += formations[i].spin_speed;
+
+            formations[i].middle = Vector2MoveTowards(formations[i].middle, formations[i].target, 0.5);
+        }
+    }
+}
+
+void CheckFormationMembersHit(Player *p)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (formations[i].exist)
+        {
+            for (int j = 0; j < 20; j++)
+            {
+                if (p->projectiles[j].exist)
+                {
+                    Rectangle projectile = (Rectangle){p->projectiles[j].pos.x, p->projectiles[j].pos.y, projectile_texture.width, projectile_texture.height};
+
+                    for (int k = 0; k < 4; k++)
+                    {
+                        Rectangle enemy_member = (Rectangle){formations[i].formation_members[k].pos.x, formations[i].formation_members[k].pos.y, 10, 10};
+
+                        if (CheckCollisionRecs(projectile, enemy_member))
+                        {
+                            p->projectiles[j].exist = false;
+                            formations[i].formation_members[k].exist = false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void RenderFormations()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (formations[i].exist)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                if (formations[i].formation_members[j].exist)
+                {
+                    DrawTexture(enemy_texture, formations[i].middle.x + formations[i].formation_members[j].pos.x, formations[i].middle.y + formations[i].formation_members[j].pos.y, WHITE);
+                }
+            }
+        }
     }
 }
 
@@ -177,5 +292,20 @@ void CheckEnemies(Enemy *enemies)
         }
     }
 
-    SpawnEnemies(enemies, alive_enemies);
+    if (spawn_interval <= 0)
+    {
+        SpawnEnemies(enemies, alive_enemies);
+
+        SpawnFormation();
+        // if (GetRandomValue(1, 10) == 1 && current_formations < 4)
+        // {
+        //     current_formations++;
+        // }
+
+        spawn_interval = GetRandomValue(max_spawn_interval - 60, max_spawn_interval + 60);
+    }
+    else
+    {
+        spawn_interval--;
+    }
 }

@@ -1,9 +1,5 @@
 #include <stdio.h>
 
-// Player texture
-Texture2D player_texture;
-Texture2D projectile_texture;
-
 // Weapon variables
 const int cooldown_max = 50;
 int fire_cooldown = cooldown_max;

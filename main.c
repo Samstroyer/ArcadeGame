@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "raymath.h"
 #include <stdlib.h>
+#include "textures.c"
 #include "structs.c"
 #include "enemy.c"
 #include "player.c"
@@ -43,6 +44,10 @@ void Setup(Enemy *enemies, Player *p)
     {
         enemy_projectiles[i].exist = false;
     }
+    for (int i = 0; i < 4; i++)
+    {
+        formations[i].exist = false;
+    }
 }
 
 // Main function
@@ -76,17 +81,19 @@ int main()
 
         UpdateProjectiles(&p);
         MoveEnemies(enemies, &p);
+        UpdateFormations();
 
         CheckProjectileCollisions(enemies, &p);
+        // CheckFormationMembersHit(&p);
 
         RenderPlayer(&p);
         RenderEnemies(enemies);
         RenderEnemyProjectiles(enemies);
+        RenderFormations();
 
         DrawText(TextFormat("Points: %i", p.points), 20, 750, 45, WHITE);
 
         EndDrawing();
     }
-
     return 0;
 }
