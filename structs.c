@@ -107,4 +107,5 @@ typedef struct
     float rotation;
     float radius;
     float spin_speed;
+    Rectangle boundary_box;
 } CircleFormation;

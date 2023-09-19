@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "textures.c"
 #include "structs.c"
+#include "formations.c"
 #include "enemy.c"
 #include "player.c"
 
@@ -84,7 +85,7 @@ int main()
         UpdateFormations();
 
         CheckProjectileCollisions(enemies, &p);
-        // CheckFormationMembersHit(&p);
+        CheckFormationMembersHit(&p);
 
         RenderPlayer(&p);
         RenderEnemies(enemies);
