@@ -109,3 +109,14 @@ typedef struct
     float spin_speed;
     Rectangle boundary_box;
 } CircleFormation;
+
+typedef struct
+{
+    Rectangle boundary_box;
+    Vector2 velocity;
+    Vector2 target;
+    Vector2 middle;
+    float snaking_path;
+    bool exist;
+    FormationEnemy formation_members[6];
+} SnakeFormation;

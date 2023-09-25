@@ -187,9 +187,9 @@ void CheckEnemies(Enemy *enemies)
         SpawnEnemies(enemies, alive_enemies);
 
         SpawnFormation();
-        // if (GetRandomValue(1, 10) == 1 && current_formations < 4)
+        // if (GetRandomValue(1, 10) == 1 && current_circle_formations < 4)
         // {
-        //     current_formations++;
+        //     current_circle_formations++;
         // }
 
         spawn_interval = GetRandomValue(max_spawn_interval - 120, max_spawn_interval);

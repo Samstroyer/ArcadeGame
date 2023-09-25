@@ -45,9 +45,10 @@ void Setup(Enemy *enemies, Player *p)
     {
         enemy_projectiles[i].exist = false;
     }
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < max_formations_general; i++)
     {
-        formations[i].exist = false;
+        circle_formations[i].exist = false;
+        snake_formations[i].exist = false;
     }
 }
 
