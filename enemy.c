@@ -184,13 +184,10 @@ void CheckEnemies(Enemy *enemies)
 
     if (spawn_interval <= 0)
     {
-        SpawnEnemies(enemies, alive_enemies);
+        // This should be chaos mode!
+        // SpawnEnemies(enemies, alive_enemies);
 
         SpawnFormation();
-        // if (GetRandomValue(1, 10) == 1 && current_circle_formations < 4)
-        // {
-        //     current_circle_formations++;
-        // }
 
         spawn_interval = GetRandomValue(max_spawn_interval - 120, max_spawn_interval);
     }

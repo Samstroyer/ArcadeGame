@@ -1,11 +1,14 @@
 #include "raylib.h"
 #include "raymath.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include "textures.c"
 #include "structs.c"
+#include "explosion.c"
 #include "formations.c"
 #include "enemy.c"
 #include "player.c"
+#include "menu.c"
 
 // Load and resize the player and enemy images to textures
 void LoadImages()
@@ -45,10 +48,9 @@ void Setup(Enemy *enemies, Player *p)
     {
         enemy_projectiles[i].exist = false;
     }
-    for (int i = 0; i < max_formations_general; i++)
+    for (int i = 0; i < max_formations; i++)
     {
-        circle_formations[i].exist = false;
-        snake_formations[i].exist = false;
+        formations[i].exist = false;
     }
 }
 
@@ -60,42 +62,66 @@ int main()
     SetTargetFPS(100);
     LoadImages();
 
-    Enemy enemies[200];
-
-    Player p;
-    p.pos.x = (GetScreenWidth() / 2) - (player_texture.width / 2);
-    p.pos.y = GetScreenHeight() - 40;
-    p.selected_projectile = PROJECTILE_SLOW; // 0
-    p.speed = 2.5f;
-
-    Setup(enemies, &p);
-
-    // Game loop
     while (!WindowShouldClose())
     {
-        BeginDrawing();
-        ClearBackground(BLACK);
-        // DrawTexture(background, -150, 0, WHITE);
+        switch (current_menu)
+        {
+        case START_MENU:
+        {
+            RenderMenu();
+            break;
+        }
+        case GAME_MENU:
+        {
+            Enemy enemies[200];
 
-        Input(&p);
-        CheckEnemies(enemies);
-        FireEnemies(enemies);
+            Player p;
+            p.pos.x = (GetScreenWidth() / 2) - (player_texture.width / 2);
+            p.pos.y = GetScreenHeight() - 40;
+            p.selected_projectile = PROJECTILE_SLOW; // 0
+            p.speed = 2.5f;
 
-        UpdateProjectiles(&p);
-        MoveEnemies(enemies, &p);
-        UpdateFormations();
+            Setup(enemies, &p);
 
-        CheckProjectileCollisions(enemies, &p);
-        CheckFormationMembersHit(&p);
+            StartAnimation();
 
-        RenderPlayer(&p);
-        RenderEnemies(enemies);
-        RenderEnemyProjectiles(enemies);
-        RenderFormations();
+            // Game loop
+            while (!WindowShouldClose())
+            {
+                BeginDrawing();
+                ClearBackground(BLACK);
 
-        DrawText(TextFormat("Points: %i", p.points), 20, 750, 45, WHITE);
+                Rain();
 
-        EndDrawing();
+                Input(&p);
+                CheckEnemies(enemies);
+                FireEnemies(enemies);
+
+                UpdateProjectiles(&p);
+                MoveEnemies(enemies, &p);
+                UpdateFormations();
+
+                CheckProjectileCollisions(enemies, &p);
+                CheckFormationMembersHit(&p);
+
+                RenderPlayer(&p);
+                RenderEnemies(enemies);
+                RenderExplosions();
+                RenderEnemyProjectiles(enemies);
+                RenderFormations();
+
+                DrawText(TextFormat("Points: %i", p.points), 20, 750, 45, WHITE);
+
+                EndDrawing();
+            }
+            current_menu = START_MENU;
+            break;
+        }
+        case HELP_MENU:
+        {
+            break;
+        }
+        }
     }
     return 0;
 }

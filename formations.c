@@ -1,96 +1,362 @@
-const char max_formations_general = 2;
-CircleFormation circle_formations[max_formations_general];
-char current_circle_formations = 0;
-SnakeFormation snake_formations[max_formations_general];
-char current_snake_formations = 0;
+const char max_formations = 4;
+const char max_members = 10;
+Formation formations[max_formations];
+char current_formations = 0;
+// float test = 3; // For testing all formations
 
 void SpawnFormation()
 {
-    for (int i = 0; i < max_formations_general; i++)
+    for (char i = 0; i < max_formations; i++)
     {
-        if (circle_formations[i].exist)
+        if (formations[i].exist)
             continue;
 
-        circle_formations[i].exist = true;
+        current_formations++;
 
-        circle_formations[i].rotation = 0;
-        circle_formations[i].radius = GetRandomValue(40, 80);
-        circle_formations[i].spin_speed = circle_formations[i].radius * 0.0005;
-        circle_formations[i].middle = (Vector2){GetRandomValue(100, 700), -circle_formations[i].radius * 2};
-        circle_formations[i].target = (Vector2){GetRandomValue(circle_formations[i].radius, GetRenderWidth() - circle_formations[i].radius)};
+        formations[i].exist = true;
+        // formations[i].member_count = test;
+        formations[i].member_count = GetRandomValue(3, 10);
 
-        circle_formations[i].boundary_box = (Rectangle){-circle_formations[i].radius, -circle_formations[i].radius, circle_formations[i].radius * 2, circle_formations[i].radius * 2};
+        formations[i].timer = 0;
 
-        for (int j = 0; j < 4; j++)
+        formations[i].middle = (Vector2){GetRandomValue(200, 600), -200};
+
+        formations[i].target = (Vector2){GetRandomValue(formations[i].radius, GetRenderWidth() - formations[i].radius)};
+
+        // Make sure that no enemies exist from previous formations
+        for (int j = 0; j < max_members; j++)
         {
-            float x = cos(circle_formations[i].rotation + (j * (PI / 2)));
-            float y = sin(circle_formations[i].rotation + (j * (PI / 2)));
-
-            circle_formations[i].formation_members[j].pos = (Vector2){x, y};
-
-            circle_formations[i].formation_members[j].exist = true;
+            formations[i].formation_members[j].exist = false;
         }
 
+        switch (formations[i].member_count)
+        {
+        case THREE_MEMBER:
+        {
+            formations[i].spin_speed = GetRandomValue(3, 6) * 0.01;
+            formations[i].boundary_box = (Rectangle){formations[i].middle.x - 30,
+                                                     formations[i].middle.y - 5,
+                                                     60,
+                                                     90};
+            // Snake formation
+            for (char j = 0; j < 3; j++)
+            {
+                float x = cos(formations[i].timer + j) * 20;
+                formations[i].formation_members[j].pos = (Vector2){x, j * 25};
+                formations[i].formation_members[j].exist = true;
+            }
+            break;
+        }
+        case FOUR_MEMBER:
+        {
+            formations[i].radius = GetRandomValue(40, 80);
+            formations[i].spin_speed = formations[i].radius * 0.0002;
+            formations[i].boundary_box = (Rectangle){formations[i].middle.x - formations[i].radius - 5,
+                                                     formations[i].middle.y - formations[i].radius - 5,
+                                                     formations[i].radius * 2 + 15,
+                                                     formations[i].radius * 2 + 15};
+            // Spinning circle formation
+            for (char j = 0; j < 4; j++)
+            {
+                float x = cos(formations[i].timer + (j * (PI / 2))) * formations[i].radius;
+                float y = sin(formations[i].timer + (j * (PI / 2))) * formations[i].radius;
+
+                formations[i].formation_members[j].pos = (Vector2){x, y};
+                formations[i].formation_members[j].exist = true;
+            }
+            break;
+        }
+        case FIVE_MEMBER:
+        {
+            formations[i].boundary_box = (Rectangle){formations[i].middle.x - 40,
+                                                     formations[i].middle.y - 5,
+                                                     80,
+                                                     90};
+            // T formation - First ¯ then |
+            char start_x = -30;
+            for (char j = 0; j < 3; j++)
+            {
+                formations[i].formation_members[j].pos = (Vector2){start_x, 0};
+                formations[i].formation_members[j].exist = true;
+
+                start_x += 30;
+            }
+            char start_y = 30;
+            for (char j = 3; j < 5; j++)
+            {
+                formations[i].formation_members[j].pos = (Vector2){0, start_y};
+                formations[i].formation_members[j].exist = true;
+
+                start_y += 30;
+            }
+            break;
+        }
+        case SIX_MEMBER:
+        {
+            formations[i].boundary_box = (Rectangle){formations[i].middle.x - 30,
+                                                     formations[i].middle.y - 5,
+                                                     60,
+                                                     90};
+            // Dropping fish formation
+            char start_x = -20;
+            for (char j = 0; j < 2; j++)
+            {
+                formations[i].formation_members[j].pos = (Vector2){start_x, 0};
+                formations[i].formation_members[j].exist = true;
+                formations[i].formation_members[j + 2].pos = (Vector2){start_x, 40};
+                formations[i].formation_members[j + 2].exist = true;
+                start_x += 40;
+            }
+
+            formations[i].formation_members[4].pos = (Vector2){0, 20};
+            formations[i].formation_members[4].exist = true;
+            formations[i].formation_members[5].pos = (Vector2){0, 60};
+            formations[i].formation_members[5].exist = true;
+            break;
+        }
+        case SEVEN_MEMBER:
+        {
+            formations[i].boundary_box = (Rectangle){formations[i].middle.x - 100,
+                                                     formations[i].middle.y - 5,
+                                                     200,
+                                                     100};
+            // Square root formation
+            char start_x = -85;
+            for (char j = 0; j < 2; j++)
+            {
+                formations[i].formation_members[j].pos = (Vector2){start_x, 0};
+                formations[i].formation_members[j].exist = true;
+                formations[i].formation_members[j + 2].pos = (Vector2){start_x + 145, 0};
+                formations[i].formation_members[j + 2].exist = true;
+                start_x += 25;
+            }
+            formations[i].formation_members[4].pos = (Vector2){-40, 35};
+            formations[i].formation_members[4].exist = true;
+            formations[i].formation_members[5].pos = (Vector2){40, 35};
+            formations[i].formation_members[5].exist = true;
+
+            formations[i].formation_members[6].pos = (Vector2){0, 70};
+            formations[i].formation_members[6].exist = true;
+
+            break;
+        }
+        case EIGHT_MEMBER:
+        {
+            formations[i].boundary_box = (Rectangle){formations[i].middle.x - 70,
+                                                     formations[i].middle.y - 5,
+                                                     140,
+                                                     90};
+            // Large circle formation
+            for (char j = 0; j < 8; j++)
+            {
+                float x = cos(formations[i].timer + (j * (PI / 4))) * 60;
+                float y = sin(formations[i].timer + (j * (PI / 4))) * 60;
+
+                formations[i].formation_members[j].pos = (Vector2){x, y};
+                formations[i].formation_members[j].exist = true;
+            }
+            break;
+        }
+        case NINE_MEMBER:
+        {
+            formations[i].boundary_box = (Rectangle){formations[i].middle.x - 60,
+                                                     formations[i].middle.y - 5,
+                                                     120,
+                                                     120};
+            // Crazy cube formation
+            char start_x = -40;
+            for (char j = 0; j < 3; j++)
+            {
+                formations[i].formation_members[j].pos = (Vector2){start_x, 0};
+                formations[i].formation_members[j].exist = true;
+
+                formations[i].formation_members[j + 3].pos = (Vector2){start_x, 40};
+                formations[i].formation_members[j + 3].exist = true;
+
+                formations[i].formation_members[j + 6].pos = (Vector2){start_x, 80};
+                formations[i].formation_members[j + 6].exist = true;
+
+                start_x += 40;
+            }
+            break;
+        }
+        case TEN_MEMBER:
+        {
+            formations[i].boundary_box = (Rectangle){formations[i].middle.x - 100,
+                                                     formations[i].middle.y - 5,
+                                                     200,
+                                                     160};
+            char start_y = 0;
+            for (char j = 0; j < 2; j++)
+            {
+                formations[i].formation_members[j].pos = (Vector2){-90, start_y};
+                formations[i].formation_members[j].exist = true;
+                formations[i].formation_members[j + 2].pos = (Vector2){90, start_y};
+                formations[i].formation_members[j + 2].exist = true;
+
+                formations[i].formation_members[j + 4].pos = (Vector2){-60, start_y + 90};
+                formations[i].formation_members[j + 4].exist = true;
+                formations[i].formation_members[j + 6].pos = (Vector2){60, start_y + 90};
+                formations[i].formation_members[j + 6].exist = true;
+
+                start_y += 50;
+            }
+
+            formations[i].formation_members[8].pos = (Vector2){0, 20};
+            formations[i].formation_members[8].exist = true;
+
+            formations[i].formation_members[9].pos = (Vector2){0, 120};
+            formations[i].formation_members[9].exist = true;
+            break;
+        }
+        default:
+        {
+            puts("Error in formations.c at ~ ln 180");
+            break;
+        }
+        }
+
+        formations[i].boundary_box = (Rectangle){-formations[i].radius, -formations[i].radius, formations[i].radius * 2, formations[i].radius * 2};
+
+        // Need to use the box for this v
         break;
     }
 }
 
 void UpdateFormations()
 {
-    for (int i = 0; i < max_formations_general; i++)
+    for (char i = 0; i < max_formations; i++)
     {
-        if (!circle_formations[i].exist)
+        if (!formations[i].exist)
             continue;
 
-        circle_formations[i].boundary_box = (Rectangle){circle_formations[i].middle.x - circle_formations[i].radius, circle_formations[i].middle.y - circle_formations[i].radius, 25 + circle_formations[i].radius * 2, 25 + circle_formations[i].radius * 2};
-
-        bool hit_target = (circle_formations[i].middle.x == circle_formations[i].target.x && circle_formations[i].middle.y == circle_formations[i].target.y);
-
-        if (hit_target)
-        {
-            int start_x;
-
-            bool right_half = i == 0 ? false : true; // If the formation has index 0 it is the left formation, starting at 0
-            if (right_half)
-                start_x = 400;
-            else
-                start_x = 0;
-
-            circle_formations[i].target = (Vector2){GetRandomValue(start_x + circle_formations[i].boundary_box.width, start_x + 400 - circle_formations[i].boundary_box.width), GetRandomValue(circle_formations[i].boundary_box.height, 400)};
-        }
-
         bool has_members = false;
-        for (int j = 0; j < 4; j++)
+        for (char j = 0; j < 10; j++)
         {
-            if (circle_formations[i].formation_members[j].exist)
-            {
-                float x = cos(circle_formations[i].rotation + (j * (PI / 2))) * circle_formations[i].radius;
-                float y = sin(circle_formations[i].rotation + (j * (PI / 2))) * circle_formations[i].radius;
+            has_members = formations[i].formation_members[j].exist ? true : has_members;
+        }
+        formations[i].exist = has_members;
 
-                circle_formations[i].formation_members[j].pos = (Vector2){x, y};
-
-                has_members = true;
-            }
+        if (!formations[i].exist)
+        {
+            current_formations--;
+            continue;
         }
 
-        circle_formations[i].exist = has_members;
+        // Get a new target if previous target has been located
+        if (Vector2Equals(formations[i].middle, formations[i].target))
+            formations[i].target = (Vector2){
+                GetRandomValue(formations[i].boundary_box.width, GetScreenWidth() - formations[i].boundary_box.width),
+                GetRandomValue(formations[i].boundary_box.height, 550 - formations[i].boundary_box.height)};
 
-        circle_formations[i].rotation += circle_formations[i].spin_speed;
+        // This switch is mostly for calculating hitboxes
+        switch (formations[i].member_count)
+        {
+        case THREE_MEMBER:
+        {
+            formations[i].boundary_box = (Rectangle){formations[i].middle.x - 30,
+                                                     formations[i].middle.y - 5,
+                                                     80,
+                                                     90};
+            // Snake formation
+            for (char j = 0; j < formations[i].member_count; j++)
+            {
+                float x = cos(formations[i].timer + j) * 20;
+                formations[i].formation_members[j].pos = (Vector2){x, j * 20};
+            }
+            break;
+        }
+        case FOUR_MEMBER:
+        {
+            formations[i].boundary_box = (Rectangle){formations[i].middle.x - formations[i].radius - 5,
+                                                     formations[i].middle.y - formations[i].radius - 40,
+                                                     formations[i].radius * 2 + 30,
+                                                     formations[i].radius * 2 + 60};
+            // Spinning circle formation
+            for (char j = 0; j < formations[i].member_count; j++)
+            {
+                if (formations[i].formation_members[j].exist)
+                {
+                    float x = cos(formations[i].timer + (j * (PI / 2))) * formations[i].radius;
+                    float y = sin(formations[i].timer + (j * (PI / 2))) * formations[i].radius;
+                    formations[i].formation_members[j].pos = (Vector2){x, y};
+                }
+            }
+            break;
+        }
+        case FIVE_MEMBER:
+        {
+            formations[i].boundary_box = (Rectangle){formations[i].middle.x - 40,
+                                                     formations[i].middle.y - 5,
+                                                     100,
+                                                     90};
+            break;
+        }
+        case SIX_MEMBER:
+        {
+            formations[i].boundary_box = (Rectangle){formations[i].middle.x - 30,
+                                                     formations[i].middle.y - 5,
+                                                     80,
+                                                     90};
+            break;
+        }
+        case SEVEN_MEMBER:
+        {
+            formations[i].boundary_box = (Rectangle){formations[i].middle.x - 100,
+                                                     formations[i].middle.y - 5,
+                                                     220,
+                                                     100};
+            break;
+        }
+        case EIGHT_MEMBER:
+        {
+            formations[i].boundary_box = (Rectangle){formations[i].middle.x - 70,
+                                                     formations[i].middle.y - 80,
+                                                     160,
+                                                     180};
+            break;
+        }
+        case NINE_MEMBER:
+        {
+            formations[i].boundary_box = (Rectangle){formations[i].middle.x - 60,
+                                                     formations[i].middle.y - 5,
+                                                     140,
+                                                     120};
+            break;
+        }
+        case TEN_MEMBER:
+        {
+            formations[i].boundary_box = (Rectangle){formations[i].middle.x - 100,
+                                                     formations[i].middle.y - 5,
+                                                     220,
+                                                     160};
+            break;
+        }
+        default:
+        {
+            puts("Error in formations.c at ~ ln 120");
+            break;
+        }
+        }
 
-        circle_formations[i].middle = Vector2MoveTowards(circle_formations[i].middle, circle_formations[i].target, 1);
+        // DrawRectangleRec(formations[i].boundary_box, RED); // Draws bounding boxes
+
+        formations[i].timer += formations[i].spin_speed;
+
+        formations[i].middle = Vector2MoveTowards(formations[i].middle, formations[i].target, 1);
     }
 }
 
 void CheckFormationMembersHit(Player *p)
 {
-    for (int i = 0; i < max_formations_general; i++)
+    for (char i = 0; i < max_formations; i++)
     {
         // Check that the formation exists
-        if (!circle_formations[i].exist)
+        if (!formations[i].exist)
             continue;
 
         // Check if any bullet hits
-        for (int j = 0; j < 20; j++)
+        for (char j = 0; j < 20; j++)
         {
             // Check if the bullet exists
             if (!p->projectiles[j].exist)
@@ -98,21 +364,29 @@ void CheckFormationMembersHit(Player *p)
 
             Rectangle projectile = (Rectangle){p->projectiles[j].pos.x, p->projectiles[j].pos.y, projectile_texture.width, projectile_texture.height};
 
-            for (int k = 0; k < 4; k++)
+            if (!CheckCollisionRecs(projectile, formations[i].boundary_box))
+                continue;
+
+            for (char k = 0; k < 10; k++)
             {
                 // Check if the enemy exists
-                if (!circle_formations[i].formation_members[k].exist)
+                if (!formations[i].formation_members[k].exist)
                     continue;
 
-                if (!CheckCollisionRecs(projectile, circle_formations[i].boundary_box))
-                    continue;
+                // if (!CheckCollisionRecs(projectile, formations[i].boundary_box))
+                //     continue;
 
-                Rectangle enemy_member = (Rectangle){circle_formations[i].middle.x + circle_formations[i].formation_members[k].pos.x, circle_formations[i].middle.y + circle_formations[i].formation_members[k].pos.y, enemy_texture.width, enemy_texture.height};
+                Rectangle enemy_member = (Rectangle){
+                    formations[i].middle.x + formations[i].formation_members[k].pos.x,
+                    formations[i].middle.y + formations[i].formation_members[k].pos.y,
+                    enemy_texture.width,
+                    enemy_texture.height};
 
                 if (CheckCollisionRecs(projectile, enemy_member))
                 {
+                    AddExplosion(Vector2Add(formations[i].middle, formations[i].formation_members[k].pos));
                     p->projectiles[j].exist = false;
-                    circle_formations[i].formation_members[k].exist = false;
+                    formations[i].formation_members[k].exist = false;
                     p->points++;
                 }
             }
@@ -122,17 +396,19 @@ void CheckFormationMembersHit(Player *p)
 
 void RenderFormations()
 {
-    for (int i = 0; i < max_formations_general; i++)
+    for (int i = 0; i < max_formations; i++)
     {
-        if (!circle_formations[i].exist)
+        if (!formations[i].exist)
             continue;
 
-        for (int j = 0; j < 4; j++)
+        for (int j = 0; j < 10; j++)
         {
-            if (!circle_formations[i].formation_members[j].exist)
+            if (!formations[i].formation_members[j].exist)
                 continue;
 
-            DrawTexture(enemy_texture, circle_formations[i].middle.x + circle_formations[i].formation_members[j].pos.x, circle_formations[i].middle.y + circle_formations[i].formation_members[j].pos.y, WHITE);
+            DrawTexture(enemy_texture, formations[i].middle.x + formations[i].formation_members[j].pos.x, formations[i].middle.y + formations[i].formation_members[j].pos.y, WHITE);
         }
     }
 }
+
+// void ReformatFormation() {}

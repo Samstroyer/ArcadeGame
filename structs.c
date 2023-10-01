@@ -97,26 +97,41 @@ typedef struct
     bool exist;
 } FormationEnemy;
 
-typedef struct
+typedef enum
 {
-    Vector2 middle;
-    Vector2 velocity;
-    Vector2 target;
-    FormationEnemy formation_members[4];
-    bool exist;
-    float rotation;
-    float radius;
-    float spin_speed;
-    Rectangle boundary_box;
-} CircleFormation;
+    THREE_MEMBER = 3,
+    FOUR_MEMBER,
+    FIVE_MEMBER,
+    SIX_MEMBER,
+    SEVEN_MEMBER,
+    EIGHT_MEMBER,
+    NINE_MEMBER,
+    TEN_MEMBER,
+} FormationType_E;
 
 typedef struct
 {
+    FormationEnemy formation_members[10];
     Rectangle boundary_box;
+    Vector2 middle;
     Vector2 velocity;
     Vector2 target;
-    Vector2 middle;
-    float snaking_path;
+    float timer;
+    float radius;
+    float spin_speed;
     bool exist;
-    FormationEnemy formation_members[6];
-} SnakeFormation;
+    char member_count;
+} Formation;
+
+typedef enum
+{
+    START_MENU,
+    GAME_MENU,
+    HELP_MENU,
+} Menu_E;
+
+typedef struct
+{
+    float timer;
+    Vector2 pos;
+} Explosion;

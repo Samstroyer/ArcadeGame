@@ -87,6 +87,7 @@ void UpdateProjectiles(Player *p)
     }
 }
 
+// Check if enemies collide with projectiles
 void CheckProjectileCollisions(Enemy *enemies, Player *p)
 {
     int enemy_sprite_width = enemy_texture.width;
