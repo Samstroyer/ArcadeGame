@@ -65,9 +65,14 @@ void Input(Player *p)
 }
 
 // Render the player
-void RenderPlayer(Player *p)
+void RenderPlayerAndHP(Player *p)
 {
     DrawTexture(player_texture, p->pos.x, p->pos.y, WHITE);
+    DrawText("HP:", 660, 770, 24, WHITE);
+    for (int i = 0; i < p->hp; i++)
+    {
+        DrawTexture(player_texture, (i * 30) + 700, 765, WHITE);
+    }
 }
 
 // Update all the projectiles the player has shot
@@ -77,7 +82,7 @@ void UpdateProjectiles(Player *p)
     {
         if (p->projectiles[i].exist)
         {
-            p->projectiles[i].pos.y -= 3.5;
+            p->projectiles[i].pos.y -= 5;
             DrawTexture(projectile_texture, p->projectiles[i].pos.x, p->projectiles[i].pos.y, WHITE);
             if (p->projectiles[i].pos.y <= -10)
             {
@@ -115,6 +120,37 @@ void CheckProjectileCollisions(Enemy *enemies, Player *p)
                 enemies[i].exist = false;
                 p->points++;
             }
+        }
+    }
+}
+
+void CheckPlayerHit(Player *p)
+{
+    if (p->invincibility_timer > 0)
+    {
+        p->invincibility_timer--;
+        return;
+    }
+
+    Rectangle player = (Rectangle){
+        p->pos.x,
+        p->pos.y,
+        25,
+        25};
+
+    for (int i = 0; i < max_formation_projectiles; i++)
+    {
+        Rectangle projectile = (Rectangle){
+            formation_projectiles[i].pos.x,
+            formation_projectiles[i].pos.y,
+            10,
+            10};
+
+        if (CheckCollisionRecs(player, projectile))
+        {
+            p->hp--;
+            p->invincibility_timer = 180;
+            return;
         }
     }
 }

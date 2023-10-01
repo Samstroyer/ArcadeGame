@@ -1,5 +1,3 @@
-#include "raylib.h"
-
 /*
     This file contains all the structs for the program
     Player, Enemy and Projectile structs, enums and type arrays
@@ -41,6 +39,8 @@ typedef struct
     Projectile projectiles[20];
     char selected_projectile;
     long points;
+    unsigned char hp;
+    unsigned char invincibility_timer;
 } Player;
 
 int enemy_spawn_timer_max = 180;
@@ -95,6 +95,7 @@ typedef struct
 {
     Vector2 pos;
     bool exist;
+    unsigned char timer;
 } FormationEnemy;
 
 typedef enum
@@ -129,6 +130,12 @@ typedef enum
     GAME_MENU,
     HELP_MENU,
 } Menu_E;
+
+typedef struct
+{
+    Vector2 pos;
+    bool exist;
+} FormationProjectile;
 
 typedef struct
 {

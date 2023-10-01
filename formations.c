@@ -2,7 +2,10 @@ const char max_formations = 4;
 const char max_members = 10;
 Formation formations[max_formations];
 char current_formations = 0;
-// float test = 3; // For testing all formations
+const unsigned char max_enemy_shooting_cooldown = 250;
+
+const char max_formation_projectiles = 80;
+FormationProjectile formation_projectiles[max_formation_projectiles];
 
 void SpawnFormation()
 {
@@ -14,7 +17,6 @@ void SpawnFormation()
         current_formations++;
 
         formations[i].exist = true;
-        // formations[i].member_count = test;
         formations[i].member_count = GetRandomValue(3, 10);
 
         formations[i].timer = 0;
@@ -27,6 +29,7 @@ void SpawnFormation()
         for (int j = 0; j < max_members; j++)
         {
             formations[i].formation_members[j].exist = false;
+            formations[i].formation_members[j].timer = GetRandomValue(max_enemy_shooting_cooldown / 2, max_enemy_shooting_cooldown);
         }
 
         switch (formations[i].member_count)
@@ -407,6 +410,62 @@ void RenderFormations()
                 continue;
 
             DrawTexture(enemy_texture, formations[i].middle.x + formations[i].formation_members[j].pos.x, formations[i].middle.y + formations[i].formation_members[j].pos.y, WHITE);
+        }
+    }
+}
+
+void FormationsShoot()
+{
+    for (int i = 0; i < max_formations; i++)
+    {
+        if (!formations[i].exist)
+            continue;
+
+        for (int j = 0; j < max_members; j++)
+        {
+            if (!formations[i].formation_members[j].exist)
+                continue;
+
+            if (formations[i].formation_members[j].timer > 0)
+            {
+                formations[i].formation_members[j].timer--;
+            }
+            else
+            {
+                // make it nor fire always
+                if (GetRandomValue(0, 10) > 8)
+                {
+                    for (int k = 0; k < max_formation_projectiles; k++)
+                    {
+                        if (formation_projectiles[k].exist)
+                            continue;
+
+                        formation_projectiles[k].exist = true;
+                        formation_projectiles[k].pos = Vector2Add(formations[i].formation_members[j].pos, formations[i].middle);
+                        break;
+                    }
+                }
+                formations[i].formation_members[j].timer = GetRandomValue(max_enemy_shooting_cooldown / 2, max_enemy_shooting_cooldown);
+            }
+        }
+    }
+}
+
+void UpdateAndDrawFormationProjectiles()
+{
+    for (int i = 0; i < max_formation_projectiles; i++)
+    {
+        if (!formation_projectiles[i].exist)
+            continue;
+
+        if (formation_projectiles[i].pos.y > 800)
+        {
+            formation_projectiles[i].exist = false;
+        }
+        else
+        {
+            formation_projectiles[i].pos.y += 3;
+            DrawTexture(projectile_texture, formation_projectiles[i].pos.x, formation_projectiles[i].pos.y, PURPLE);
         }
     }
 }
