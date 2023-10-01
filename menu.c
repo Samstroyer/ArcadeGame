@@ -13,6 +13,8 @@ void RenderMenu()
     BeginDrawing();
     ClearBackground(WHITE);
 
+    DrawTexture(title_texture, 200, 100, WHITE);
+
     DrawRectangleRec(start_button, GRAY);
     DrawRectangleLinesEx(start_button, 3, BLACK);
     DrawText("PLAY", start_button.x + 56, start_button.y + 9, 32, BLACK);

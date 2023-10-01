@@ -26,6 +26,7 @@ void LoadImages()
     enemy_texture = LoadTextureFromImage(enemy_image);
     projectile_texture = LoadTexture("Sprites/projectile.png");
     explosion_texture = LoadTexture("Sprites/explosion_sheet.png");
+    title_texture = LoadTexture("Sprites/title.png");
 
     UnloadImage(player_image);
     UnloadImage(enemy_image);
