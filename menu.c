@@ -1,5 +1,6 @@
 Rectangle start_button = (Rectangle){300, 300, 200, 50};
-Rectangle exit_button = (Rectangle){300, 400, 200, 50};
+Rectangle help_button = (Rectangle){300, 400, 200, 50};
+Rectangle exit_button = (Rectangle){300, 500, 200, 50};
 
 Menu_E current_menu = START_MENU;
 
@@ -19,6 +20,10 @@ void RenderMenu()
     DrawRectangleLinesEx(start_button, 3, BLACK);
     DrawText("PLAY", start_button.x + 56, start_button.y + 9, 32, BLACK);
 
+    DrawRectangleRec(help_button, GRAY);
+    DrawRectangleLinesEx(help_button, 3, BLACK);
+    DrawText("HELP", help_button.x + 56, help_button.y + 9, 32, BLACK);
+
     DrawRectangleRec(exit_button, GRAY);
     DrawRectangleLinesEx(exit_button, 3, BLACK);
     DrawText("EXIT", exit_button.x + 56, exit_button.y + 9, 32, BLACK);
@@ -36,6 +41,17 @@ void RenderMenu()
             {
                 rain[i].w = 0;
             }
+        }
+    }
+
+    if (CheckCollisionPointRec(mouse_pos, help_button))
+    {
+        DrawRectangleRec(help_button, LIGHTGRAY);
+        DrawRectangleLinesEx(help_button, 3, BLACK);
+        DrawText("HELP", help_button.x + 56, help_button.y + 9, 32, BLACK);
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+        {
+            current_menu = HELP_MENU;
         }
     }
 
@@ -90,4 +106,67 @@ void StartAnimation()
 
         i--;
     }
+}
+
+void HelpAnimation()
+{
+    float i = 255;
+
+    Color fade = (Color){255, 255, 255, 255};
+
+    while (i > 0)
+    {
+        fade = (Color){i, i, i, 255};
+
+        BeginDrawing();
+
+        int x = Remap(i, 255, 0, 0, GetScreenWidth());
+
+        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), BLACK);
+        DrawRectangle(x, x, GetScreenWidth() - x * 2, GetScreenHeight() - x * 2, fade);
+
+        EndDrawing();
+
+        i -= 1.5;
+    }
+}
+
+void HelpMenu()
+{
+    HelpAnimation();
+
+    char font_title = 48;
+    char font_other = 24;
+
+    char *title = "Welcome to my arcade game!";
+    short title_size = MeasureText(title, font_title);
+
+    char *line_one = "This game is created by Samuel Palmér in Te4.";
+    short line_one_size = MeasureText(line_one, font_other);
+
+    char *line_two = "The game is a verson of Galage.";
+    short line_two_size = MeasureText(line_two, font_other);
+
+    char *controls_line = "Move your ship with WASD, shoot with space.";
+    short controls_line_size = MeasureText(controls_line, font_other);
+
+    char *exit_line = "Press ESC to exit";
+    short exit_line_size = MeasureText(exit_line, font_other);
+
+    while (!WindowShouldClose())
+    {
+        BeginDrawing();
+
+        ClearBackground(BLACK);
+
+        DrawText(title, GetScreenWidth() / 2 - title_size / 2, 200, font_title, WHITE);
+        DrawText(line_one, GetScreenWidth() / 2 - line_one_size / 2, 300, font_other, LIGHTGRAY);
+        DrawText(line_two, GetScreenWidth() / 2 - line_two_size / 2, 340, font_other, LIGHTGRAY);
+        DrawText(controls_line, GetScreenWidth() / 2 - controls_line_size / 2, 380, font_other, LIGHTGRAY);
+        DrawText(exit_line, GetScreenWidth() / 2 - exit_line_size / 2, 450, font_other, LIGHTGRAY);
+
+        EndDrawing();
+    }
+
+    current_menu = START_MENU;
 }

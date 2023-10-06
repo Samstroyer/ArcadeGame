@@ -65,7 +65,7 @@ void Input(Player *p)
 }
 
 // Render the player
-void RenderPlayerAndHP(Player *p)
+void RenderPlayerAndUI(Player *p)
 {
     DrawTexture(player_texture, p->pos.x, p->pos.y, WHITE);
     DrawText("HP:", 660, 770, 24, WHITE);

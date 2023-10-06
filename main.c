@@ -114,7 +114,7 @@ int main()
                 CheckFormationMembersHit(&p);
                 CheckPlayerHit(&p);
 
-                RenderPlayerAndHP(&p);
+                RenderPlayerAndUI(&p);
                 RenderEnemies(enemies);
                 RenderExplosions();
                 RenderEnemyProjectiles(enemies);
@@ -159,6 +159,7 @@ int main()
 
             const char *score_message = TextFormat("Final Score: %i", p.points);
             const char *death_message = TextFormat("Cause of death: %s", cause_of_death);
+            const char *exit_message = TextFormat("Press ESC to exit.");
 
             while (!WindowShouldClose())
             {
@@ -167,6 +168,7 @@ int main()
                 Rain();
                 DrawText(score_message, 400 - (MeasureText(score_message, 50) / 2), 300, 50, WHITE);
                 DrawText(death_message, 400 - (MeasureText(death_message, 25) / 2), 400, 25, WHITE);
+                DrawText(exit_message, 400 - (MeasureText(exit_message, 18) / 2), 475, 18, WHITE);
                 EndDrawing();
             }
             current_menu = START_MENU;
@@ -174,6 +176,7 @@ int main()
         }
         case HELP_MENU:
         {
+            HelpMenu();
             break;
         }
         }
